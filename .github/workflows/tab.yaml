@@ -2,7 +2,7 @@ on:
   push: null
   pull_request: null
 jobs:
-  prepare11:
+  prepare:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
