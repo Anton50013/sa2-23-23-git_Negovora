@@ -1,7 +1,7 @@
-name: tab
+name: action
 on:
-  push: null
-  pull_request: null
+  push:
+  pull_request:
 jobs:
   prepare:
     runs-on: ubuntu-latest
