@@ -9,6 +9,7 @@ jobs:
         uses: action/checkout@v3
         with:
           fetch-depth: 0
+          repository: Anton50013/sa2-23-23-git_Negovora
       - name: changed files
         id: changed-files
         uses: tj-actions/changed-files@v35
@@ -20,4 +21,5 @@ jobs:
       - name: Upload report
         uses: action/upload-artifact@v3
         with:
+	  repository: Anton50013/sa2-23-23-git_Negovora
           path: action.log
