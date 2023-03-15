@@ -1,23 +1,23 @@
 on:
-   push:
-   pull_request:
+  push: null
+  pull_request: null
 jobs:
-   prepare:
+  prepare:
     runs-on: ubuntu-latest
     steps:
-    - name : checkout
-      uses : action/checkout@v3
-      with:
-        fetch-depth: 0
-    - name: changed files
-      id: changed-files
-      uses: tj-actions/changed-files@v35
-    - name: count tabs
-      run: |
-         for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+      - name: checkout
+        uses: action/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+      - name: count tabs
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
           echo " $file has `grep -o $'\t' $file | wc -l` tab" >> action.log
-        done
-     - name: Upload report
-       uses: action/upload-artifact@v3
-       with:
-         path: action.log
+          done
+      - name: Upload report
+        uses: action/upload-artifact@v3
+        with:
+          path: action.log
