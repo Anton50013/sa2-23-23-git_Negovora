@@ -21,5 +21,5 @@ jobs:
       - name: Upload report
         uses: action/upload-artifact@v3
         with:
-	  repository: Anton50013/sa2-23-23-git_Negovora
           path: action.log
+          repository: Anton50013/sa2-23-23-git_Negovora
