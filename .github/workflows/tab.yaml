@@ -19,7 +19,7 @@ jobs:
           echo " $file has `grep -o $'\t' $file | wc -l` tab" >> action.log
           done
       - name: Upload report
-        uses: action/upload-artifact@v3
+        uses: action/upload-artifact@v2
         with:
           path: action.log
-          repository: Anton50013/sa2-23-23-git_Negovora
+          
