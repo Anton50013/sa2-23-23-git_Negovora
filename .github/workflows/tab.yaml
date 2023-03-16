@@ -16,7 +16,8 @@ jobs:
     - name: count tabs
       run: |
         for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
-          echo "File $file has `grep -o $'\t' $file | wc -l` tab." >> action.log
+          echo "$file was changed" >> action.log
+          echo "$file has `grep -o $'\t' $file | wc -l` tab." >> action.log
         done
     - name: tabs artifact
       uses: actions/upload-artifact@v3
