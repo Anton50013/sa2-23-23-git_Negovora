@@ -34,7 +34,7 @@ jobs:
           push: true
           tags: |
             ghcr.io/anton50013/docker_demo:${{ github.run_number }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/docker_demo:${{ github.run_number }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/itacademy_test:${{ github.run_number }}
       - name: Slack success
         uses: rtCamp/action-slack-notify@v2
         if: success()
