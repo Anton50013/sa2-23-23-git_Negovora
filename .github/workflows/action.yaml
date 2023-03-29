@@ -36,7 +36,7 @@ jobs:
             ghcr.io/anton50013/docker_demo:${{ github.run_number }}
             ${{ secrets.DOCKERHUB_USERNAME }}/itacademy_test:${{ github.run_number }}
       - name: Slack success
-        uses: rtCamp/action-slack-notify@v2
+        uses: rtCamp/action-slack-notify@v2.2.0
         if: success()
         env:
           SLACK_CHANNEL: integration
@@ -47,7 +47,7 @@ jobs:
           SLACK_USERNAME: rtCamp
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
       - name: Slack fail
-        uses: rtCamp/action-slack-notify@v2
+        uses: rtCamp/action-slack-notify@v2.2.0
         if: failure()
         env:
           SLACK_CHANNEL: integration
