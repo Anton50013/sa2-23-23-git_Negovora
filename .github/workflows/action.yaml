@@ -1,38 +1,40 @@
-name: Deploying minikube and KinD
-on:
-  - push
-  - pull_request
+---
+name: Checking pods
+on: workflow_dispatch 
+env:
+  report: report.log
+  fail_pods_report: fail_pods_report.log
 jobs:
-  deploy_minikube:
+  my:
     runs-on: ubuntu-latest
-    name: minikube
     steps:
-    - name: Install minikube
-      uses: medyagh/setup-minikube@master
-    - name: check_info
-      run: |
-       echo -e "Nods:\n$(kubectl get pods -A)" >> minikube.log
-       echo -e "Minikube version:\n$(kubectl version --short)" >> minikube.log
-       echo -e "Spintime: $(date '+%s')-${{ steps.start.outputs.start }}" >> minikube.log
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-          path: minikube.log
+      - name: Connection to host
+        run: |
+           mkdir ~/.ssh
+           eval `ssh-agent -s`
+           ssh-add - <<< "${{ secrets.SSH_KEY }}" 
+           ssh-keyscan ${{ secrets.PROXY_HOST }} >> ~/.ssh/known_hosts
+           ssh ${{ secrets.PROXY_USERNAME }}@${{ secrets.PROXY_HOST}} ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+           ssh -o ProxyCommand="ssh -W %h:%p ${{ secrets.PROXY_USERNAME }}@${{ secrets.PROXY_HOST }}" ${{ secrets.USERNAME }}@${{ secrets.HOST }} "kubectl get pods -A" >> ${{ env.report }}  
+      - name: Checking status of pods
+        id: check
+        run: |
+           sed -i '/Running/d' ${{ env.report }} >> ${{ env.fail_pods_report }}
+           sed -i '/Completed/d' ${{ env.report }} >> ${{ env.fail_pods_report }}
+           echo "other_statuses=$(wc -l < ${{ env.report }})" >> $GITHUB_OUTPUT
 
-  deploy_KinD:
-    runs-on: ubuntu-latest
-    name: KinD
-    steps:
-    - name: Install KinD
-      uses: engineerd/setup-kind@v0.5.0
-      with:
-        version: "v0.17.0"
-    - name: check_info
-      run: |
-       echo -e "Nods:\n$(kubectl get pods -A)" >> kind.log
-       echo -e "KinD version:\n$(kubectl version --short)" >> kind.log
-       echo -e "Spintime: $(date '+%s')-${{ steps.start.outputs.start }}" >> Kind.log
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-          path: kind.log
+      - name: Upload report
+        if: steps.check.outputs.other_statuses > 1
+        uses: actions/upload-artifact@v2
+        with:
+          path: ${{ env.report}}
+      
+      - name: slack Notification
+        if: steps.check.outputs.other_statuses > 1
+        uses: rtCamp/action-slack-notify@v2 
+        env:
+          SLACK_CHANNEL: test
+          SLACK_TITLE: 'Pods status'
+          SLACK_MESSAGE: 'Bad pods"'
+          SLACK_USERNAME: ${{ github.repository }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
