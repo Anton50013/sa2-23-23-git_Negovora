@@ -1,4 +1,3 @@
----
 name: Checking pods
 on: workflow_dispatch 
 env:
