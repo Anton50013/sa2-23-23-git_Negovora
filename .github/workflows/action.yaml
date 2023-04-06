@@ -1,39 +1,59 @@
-name: Checking pods
-on: workflow_dispatch 
-env:
-  report: report.log
-  fail_pods_report: fail_pods_report.log
-jobs:
-  my:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Connection to host
-        run: |
-           mkdir ~/.ssh
-           eval `ssh-agent -s`
-           ssh-add - <<< "${{ secrets.SSH_KEY }}" 
-           ssh-keyscan ${{ secrets.PROXY_HOST }} >> ~/.ssh/known_hosts
-           ssh ${{ secrets.PROXY_USERNAME }}@${{ secrets.PROXY_HOST}} ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-           ssh -o ProxyCommand="ssh -W %h:%p ${{ secrets.PROXY_USERNAME }}@${{ secrets.PROXY_HOST }}" ${{ secrets.USERNAME }}@${{ secrets.HOST }} "kubectl get pods -A" >> ${{ env.report }}  
-      - name: Checking status of pods
-        id: check
-        run: |
-           sed -i '/Running/d' ${{ env.report }} >> ${{ env.fail_pods_report }}
-           sed -i '/Completed/d' ${{ env.report }} >> ${{ env.fail_pods_report }}
-           echo "other_statuses=$(wc -l < ${{ env.report }})" >> $GITHUB_OUTPUT
+name: Docker image
 
-      - name: Upload report
-        if: steps.check.outputs.other_statuses > 1
-        uses: actions/upload-artifact@v2
+on:
+  release:
+    types: [ published ]
+  push:
+    branches: [ "master" ]
+jobs:
+  push_to_registries:
+    name: Push images
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
         with:
-          path: ${{ env.report}}
-      
-      - name: slack Notification
-        if: steps.check.outputs.other_statuses > 1
-        uses: rtCamp/action-slack-notify@v2 
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.TEST_DOCKER }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push images
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/anton50013/docker_demo:${{ github.run_number }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/itacademy_test:${{ github.run_number }}
+      - name: Slack success
+        uses: rtCamp/action-slack-notify@v2.2.0
+        if: success()
         env:
           SLACK_CHANNEL: test
-          SLACK_TITLE: 'Pods status'
-          SLACK_MESSAGE: 'Bad pods"'
-          SLACK_USERNAME: ${{ github.repository }}
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_MESSAGE: '${{ github.run_number }} success'
+          SLACK_TITLE: Post Title
+          SLACK_USERNAME: rtCamp
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Slack fail
+        uses: rtCamp/action-slack-notify@v2.2.0
+        if: failure()
+        env:
+          SLACK_CHANNEL: test
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_ICON: https://github.com/rtCamp.png?size=48
+          SLACK_MESSAGE: '${{ github.run_number }} failed'
+          SLACK_TITLE: Post Title
+          SLACK_USERNAME: rtCamp
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
