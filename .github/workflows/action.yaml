@@ -1,4 +1,4 @@
-name: checking pods in k3s
+name: checking pods
 on:
   push:
     branches:
