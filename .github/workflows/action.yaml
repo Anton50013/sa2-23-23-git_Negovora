@@ -1,17 +1,21 @@
-name: Checking status of pods and creating slack notification
-on: workflow_dispatch 
+name: checking pods in k3s
+on:
+  workflow_dispatch
+
 env:
   report: report.log
   fail_pods_report: fail_pods_report.log
+
 jobs:
   my:
     runs-on: ubuntu-latest
+
     steps:
       - name: Connection to host
         run: |
            mkdir ~/.ssh
            eval `ssh-agent -s`
-           ssh-add - <<< "${{ secrets.SSH_KEY }}" 
+           ssh-add - <<< ÏØÅ "${{ secrets.SSH_KEY }}" 
            ssh-keyscan ${{ secrets.PROXY_HOST }} >> ~/.ssh/known_hosts
            ssh ${{ secrets.PROXY_USERNAME }}@${{ secrets.PROXY_HOST}} ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
            ssh -o ProxyCommand="ssh -W %h:%p ${{ secrets.PROXY_USERNAME }}@${{ secrets.PROXY_HOST }}" ${{ secrets.USERNAME }}@${{ secrets.HOST }} "kubectl get pods -A" >> ${{ env.report }}  
