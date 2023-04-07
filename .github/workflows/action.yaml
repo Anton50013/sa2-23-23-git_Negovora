@@ -23,7 +23,7 @@ jobs:
           ssh ${{ secrets.JUMP_USER }}@${{ secrets.JUMP_SERVER }} ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
           ssh -o ProxyCommand="ssh -W %h:%p ${{ secrets.JUMP_USER }}@${{ secrets.JUMP_SERVER }}" ${{ secrets.HOST_USER }}@${{ secrets.HOST }} \
           kubectl get pods -A >> output      
-        - name: Checking status of pods
+      - name: Checking status of pods
         id: check
         run: |
            sed -i '/Running/d' ${{ env.report }} >> ${{ env.fail_pods_report }}
