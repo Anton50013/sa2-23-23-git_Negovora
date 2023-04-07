@@ -1,4 +1,3 @@
----
 name: Checking status of pods and creating slack notification
 on: workflow_dispatch 
 env:
