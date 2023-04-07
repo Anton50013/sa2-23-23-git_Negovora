@@ -1,6 +1,8 @@
 name: checking pods in k3s
 on:
-  workflow_dispatch
+  push:
+    branches:
+      - 'master'
 
 env:
   report: report.log
