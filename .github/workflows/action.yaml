@@ -21,9 +21,6 @@ jobs:
           echo "${{secrets.JUMP_SERVER}}" >> ~/.ssh/known_hosts
           ssh "${{ secrets.HOST_USER }}"@"${{ secrets.HOST }}" \
           -o ProxyCommand="ssh -W %h:%p -q "${{secrets.JUMP_USER}}"@"${{secrets.JUMP_SERVER}}"" \
-#          ssh-keyscan -H ${{ secrets.JUMP_SERVER }} >> ~/.ssh/known_hosts
-#          ssh ${{ secrets.JUMP_USER }}@${{ secrets.JUMP_SERVER }} -p 22510 ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-#          ssh -o ProxyCommand="ssh -W %h:%p ${{ secrets.JUMP_USER }}@${{ secrets.JUMP_SERVER }} -p 22510" ${{ secrets.HOST_USER }}@${{ secrets.HOST }} \
           kubectl get pods -A >> report      
       - name: Checking status of pods
         id: check
