@@ -20,8 +20,8 @@ jobs:
           eval `ssh-agent -s`
           ssh-add - <<< "${{secrets.SSH_KEY}}"
           ssh-keyscan -H ${{ secrets.JUMP_SERVER }} >> ~/.ssh/known_hosts
-          ssh ${{ secrets.JUMP_USER }}@${{ secrets.JUMP_SERVER }} ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-          ssh -o ProxyCommand="ssh -W %h:%p ${{ secrets.JUMP_USER }}@${{ secrets.JUMP_SERVER }}" ${{ secrets.HOST_USER }}@${{ secrets.HOST }} \
+          ssh ${{ secrets.JUMP_USER }}@${{ secrets.JUMP_SERVER }} -p 22510 ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          ssh -o ProxyCommand="ssh -W %h:%p ${{ secrets.JUMP_USER }}@${{ secrets.JUMP_SERVER }} -p 22510" ${{ secrets.HOST_USER }}@${{ secrets.HOST }} \
           kubectl get pods -A >> output      
       - name: Checking status of pods
         id: check
