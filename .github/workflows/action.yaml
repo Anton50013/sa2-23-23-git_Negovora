@@ -1,4 +1,4 @@
-name: checking pods
+name: checking pods1
 on:
   push:
     branches:
