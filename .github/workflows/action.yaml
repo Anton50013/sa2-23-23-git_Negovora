@@ -18,8 +18,8 @@ jobs:
           mkdir ~/.ssh
           eval `ssh-agent -s`
           ssh-add - <<< "${{secrets.SSH_KEY}}"
-          ssh-keyscan -p 22510 ${{ secrets.BASTION_IP }} >> ~/.ssh/known_hosts
-          #echo "${{secrets.JUMP_SERVER}}" >> ~/.ssh/known_hosts
+          ssh-keyscan -p 22510 ${{ secrets.JUMP_SERVER }} >> ~/.ssh/known_hosts
+          #echo "${{ secrets.JUMP_SERVER }}" >> ~/.ssh/known_hosts
           ssh -p 22510 "${{ secrets.HOST_USER }}"@"${{ secrets.HOST }}" \
           -o ProxyCommand="ssh -p 22510 -W %h:%p -q "${{secrets.JUMP_USER}}"@"${{secrets.JUMP_SERVER}}"" \
           kubectl get pods -A >> report      
