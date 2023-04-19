@@ -26,7 +26,7 @@ jobs:
         id: check
         run: |
           echo "$(cat  report.log | grep -v Running)" >> crash_report 2>&1
-          echo "pods_fail=$(cat report.log | grep -v Running | wc -l)" >> $GITHUB_OUTPUT
+          echo "pods_fail=$(cat report.log | grep -v 'Running\|Completed ' | wc -l)" >> $GITHUB_OUTPUT
 
       - name: Upload report
         if: steps.check.outputs.pods_fail == 1
