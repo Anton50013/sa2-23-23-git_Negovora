@@ -9,7 +9,7 @@ env:
   fail_pods_report: fail_pods_report.log
 
 jobs:
-  my:
+  k3:
     runs-on: ubuntu-latest
 
     steps:
@@ -25,8 +25,8 @@ jobs:
       - name: Checking status of pods
         id: check
         run: |
-          echo "$(cat  report | grep -v Running)" >> crash_report 2>&1
-          echo "pods_fail=$(cat report | grep -v Running | wc -l)" >> $GITHUB_OUTPUT
+          echo "$(cat  report.log | grep -v Running)" >> crash_report 2>&1
+          echo "pods_fail=$(cat report.log | grep -v Running | wc -l)" >> $GITHUB_OUTPUT
 
       - name: Upload report
         if: steps.check.outputs.pods_fail == 1
