@@ -29,13 +29,13 @@ jobs:
           echo "pods_fail=$(cat report | grep -v Running | wc -l)" >> $GITHUB_OUTPUT
 
       - name: Upload report
-        if: steps.check.outputs.other_statuses == 1
+        if: steps.check.outputs.pods_fail == 1
         uses: actions/upload-artifact@v2
         with:
           path: ${{ env.report}}
           
       - name: slack Notification 
-        if: steps.check.outputs.other_statuses == 1
+        if: steps.check.outputs.pods_fail == 1
         uses: rtCamp/action-slack-notify@v2 
         env:
           SLACK_CHANNEL: test
@@ -45,13 +45,13 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
       - name: Upload report
-        if: steps.check.outputs.other_statuses != 1
+        if: steps.check.outputs.pods_fail != 1
         uses: actions/upload-artifact@v2
         with:
           path: ${{ env.report}}
       
       - name: slack Notification bad
-        if: steps.check.outputs.other_statuses != 1
+        if: steps.check.outputs.pods_fail != 1
         uses: rtCamp/action-slack-notify@v2 
         env:
           SLACK_CHANNEL: test
