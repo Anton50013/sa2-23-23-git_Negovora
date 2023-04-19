@@ -56,7 +56,7 @@ jobs:
         env:
           SLACK_CHANNEL: test
           SLACK_TITLE: 'Status of pods'
-          SLACK_MESSAGE: 'Check your pods! You have status different from "Running" and "Completed"'
+          SLACK_MESSAGE: 'Bad'
           SLACK_USERNAME: ${{ github.repository }}
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           
