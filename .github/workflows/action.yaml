@@ -25,9 +25,8 @@ jobs:
       - name: Checking status of pods
         id: check
         run: |
-           sed -i '/Running/d' ${{ env.report }} >> ${{ env.fail_pods_report }}
-           sed -i '/Completed/d' ${{ env.report }} >> ${{ env.fail_pods_report }}
-           echo "other_statuses=$(wc -l < ${{ env.report }})" >> $GITHUB_OUTPUT
+          echo "$(cat  report | grep -v Running)" >> crash_report 2>&1
+          echo "pods_fail=$(cat report | grep -v Running | wc -l)" >> $GITHUB_OUTPUT
 
       - name: Upload report
         if: steps.check.outputs.other_statuses > 1
